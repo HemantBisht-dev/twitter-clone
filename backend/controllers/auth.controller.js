@@ -13,20 +13,26 @@ export const signup = async (req, res) => {
 
   try {
     const { username, fullname, email, password } = req.body;
+
+    // validate input
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
 
+    // check if user exists
     const existingUsername = await User.findOne({ username });
     if (existingUsername) {
       return res.status(400).json({ error: "Username already exist" });
     }
+
+    // check if email exists
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ error: "email already exist" });
     }
 
+    // check if password length is correct
     if (password.length < 6) {
       return res
         .status(400)
@@ -75,14 +81,21 @@ export const signup = async (req, res) => {
 // login
 export const login = async (req, res) => {
   try {
+    // Extract user input
     const { username, password } = req.body;
+
+    // Fetch user from database
     const user = await User.findOne({ username });
+
+    // Validate password
     const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
 
+    // Validate input
     if(!user || !isPasswordCorrect){
       return res.status(400).json({error:"Invalid username and password"})
     }
 
+    // Generate token and set cookie
     generateTokenAndSetCookie(user._id, res);
 
     // SEND RESPONSE TO CLIENT
@@ -107,6 +120,7 @@ export const login = async (req, res) => {
 // logout
 export const logout = async (req, res) => {
   try {
+    // Clear the jwt cookie
     res.cookie("jwt","",{maxAge:0})
     res.status(200).json({message:"Logged out successfully"})
     

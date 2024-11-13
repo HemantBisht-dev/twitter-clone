@@ -5,22 +5,27 @@ import { v2 as cloudinary } from "cloudinary";
 
 export const createPost = async (req, res) => {
   try {
+    // Extract data from request body
     const { text } = req.body;
     let { image } = req.body;
     const userId = req.user._id.toString();
 
+    // Fetch user from database
     let user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "user not found" });
 
+    // Validate post content
     if (!text && !image) {
       return res.status(400).json({ error: "post must have text and image" });
     }
 
+    // Handle image upload
     if (image) {
       const uploadedImage = await cloudinary.uploader.upload(image);
       image = uploadedImage.secure_url;
     }
 
+    // Create and save the post
     const newPost = new Post({
       author: userId,
       text,
@@ -28,12 +33,15 @@ export const createPost = async (req, res) => {
     });
 
     await newPost.save();
+
+    // Send success response
     res.status(201).json(newPost);
   } catch (error) {
     console.log("error in createPost controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const deletePost = async (req, res) => {
   try {

@@ -4,35 +4,45 @@ import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
+  // Extract username from route parameters
   const { username } = req.params;
 
   try {
+    // Fetch user from database, excluding sensitive fields
     const user = await User.findOne({ username }).select("-password");
 
+    // Handle user not found
     if (!user) return res.status(404).json({ message: "user not found" });
 
+    // Send user profile
     res.status(200).json(user);
   } catch (error) {
+    // Handle unexpected errors
     console.log("Error in getProfile:", error.message);
     res.status(500).json({ error: error.message });
   }
 };
 
 export const followUnfollowUser = async (req, res) => {
+
   const { id } = req.params;
 
   try {
+    // Fetch users
     const userToModify = await User.findById(id);
     const currentUser = await User.findById(req.user._id);
 
+    // Prevent self-following
     if (id === req.user._id.toString())
       return res
         .status(400)
         .json({ error: "you can't follow/unfollow yourself" });
 
+    // Handle user not found
     if (!userToModify || !currentUser)
       return res.status(400).json({ error: "user not found" });
 
+    // Check follow status
     const isfollowing = currentUser.following.includes(id);
 
     if (isfollowing) {
@@ -49,7 +59,7 @@ export const followUnfollowUser = async (req, res) => {
       // this will push others person id(id) into my following list
       await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
 
-      // send notification to the user
+      // create notification for the follow action
       const newNotification = new Notification({
         from: req.user._id,
         to: userToModify._id,
@@ -94,9 +104,11 @@ export const updateUserProfile = async (req, res) => {
   const userId = req.user._id;
 
   try {
+    // Fetch user from database
     let user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "user not found" });
 
+    // Handle password update
     if (
       (!currentPassword && newPassword) ||
       (currentPassword && !newPassword)
@@ -122,6 +134,7 @@ export const updateUserProfile = async (req, res) => {
       user.password = await bcrypt.hash(newPassword, salt);
     }
 
+    // Handle profile image update
     if (profileImg) {
       if (user.profileImg) {
         // https://res.cloudinary.com/dyfqon1v6/image/upload/v1712997552/zmxorwfrfmlslsmlcd.png
@@ -136,6 +149,8 @@ export const updateUserProfile = async (req, res) => {
       const uploadedResponse = await cloudinary.uploader.upload(profileImg);
       profileImg = uploadedResponse.secure_url;
     }
+
+    // Handle cover image update
     if (coverImg) {
       if (user.coverImg) {
         await cloudinary.uploader.destroy(
@@ -157,11 +172,14 @@ export const updateUserProfile = async (req, res) => {
     user.profileImg = profileImg || user.profileImg;
     user.coverImg = coverImg || user.coverImg;
 
+    // Save changes to database
     user = await user.save();
 
     // password should be null in response
+    // Remove password from response
     user.password = null;
 
+    // Send success response
     return res.status(200).json(user);
   } catch (error) {
     console.log("Error in updateUserProfile:", error.message);
