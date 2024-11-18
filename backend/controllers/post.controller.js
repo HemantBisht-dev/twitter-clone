@@ -7,7 +7,7 @@ export const createPost = async (req, res) => {
   try {
     // Extract data from request body
     const { text } = req.body;
-    let { image } = req.body;
+    let { img: image } = req.body;
     const userId = req.user._id.toString();
 
     // Fetch user from database
@@ -41,7 +41,6 @@ export const createPost = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 export const deletePost = async (req, res) => {
   try {
@@ -205,11 +204,11 @@ export const getFollowingPosts = async (req, res) => {
   }
 };
 
-export const getUserPosts = async(req,res)=>{
-  const {username} = req.params;
+export const getUserPosts = async (req, res) => {
+  const { username } = req.params;
 
   try {
-    const user = await User.findOne({username});
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ error: "user not found" });
@@ -227,4 +226,4 @@ export const getUserPosts = async(req,res)=>{
     console.log("Error in getFollowingPosts controller:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};

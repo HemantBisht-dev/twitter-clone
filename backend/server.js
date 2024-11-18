@@ -20,7 +20,8 @@ cloudinary.config({
 });
 
 // middleware runs before anything executes parse data into json format
-app.use(express.json()); // to parse req.body
+app.use(express.json({ limit: "5mb" })); // to parse req.body... limit size for image which is 5 megaByte
+// limit size should not be too high to prevent Dos(denial of service)
 app.use(express.urlencoded({ extended: true })); //to parse form data
 app.use(cookieParser());
 
