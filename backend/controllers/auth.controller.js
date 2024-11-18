@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
 import User from "../models/user.model.js";
 
-
-// signup 
+// signup
 export const signup = async (req, res) => {
   // 1- check for valid email format using regex
   // 2- username, email must be unique, check for existing username and email
@@ -77,22 +76,24 @@ export const signup = async (req, res) => {
   }
 };
 
-
 // login
 export const login = async (req, res) => {
   try {
     // Extract user input
     const { username, password } = req.body;
-
+    
     // Fetch user from database
     const user = await User.findOne({ username });
 
     // Validate password
-    const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user?.password || ""
+    );
 
     // Validate input
-    if(!user || !isPasswordCorrect){
-      return res.status(400).json({error:"Invalid username and password"})
+    if (!user || !isPasswordCorrect) {
+      return res.status(400).json({ error: "Invalid username and password" });
     }
 
     // Generate token and set cookie
@@ -109,36 +110,32 @@ export const login = async (req, res) => {
       profileImg: user.profileImg,
       coverImg: user.coverImg,
     });
-
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ error: "Internal server Error" });
   }
 };
 
-
 // logout
 export const logout = async (req, res) => {
   try {
     // Clear the jwt cookie
-    res.cookie("jwt","",{maxAge:0})
-    res.status(200).json({message:"Logged out successfully"})
-    
+    res.cookie("jwt", "", { maxAge: 0 });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in login controller", error.message);
     res.status(500).json({ error: "Internal server Error" });
   }
-}
+};
 
 // get us authenticated user
-export const getMe = async(req,res)=>{
+export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
 
-    res.status(200).json(user)
-    
+    res.status(200).json(user);
   } catch (error) {
-    console.log("Error in login controller", error.message);
+    console.log("Error in getMe controller", error.message);
     res.status(500).json({ error: "Internal server Error" });
   }
-}
+};
