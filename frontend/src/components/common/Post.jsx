@@ -10,8 +10,6 @@ import toast from "react-hot-toast";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const Post = ({ post }) => {
-  console.log("post", post);
-
   const [comment, setComment] = useState("");
 
   // get authenticated user
