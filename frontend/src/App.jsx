@@ -26,7 +26,7 @@ export default function App() {
 
         if (!res.ok) throw new Error(data.error || "Something went wrong");
 
-        console.log("authUser is here:", data);
+        // console.log("authUser is here:", data);
         return data;
       } catch (error) {
         throw new Error(error);
