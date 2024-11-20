@@ -7,7 +7,7 @@ export const getNotifications = async (req, res) => {
     // Retrieves all notifications where the to field matches the user's ID.
     const notifications = await Notification.find({ to: userId }).populate({
       path: "from",
-      select: "username, profileImg",
+      select: "username profileImg",
     });
 
     // Update Query
