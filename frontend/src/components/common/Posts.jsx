@@ -37,7 +37,7 @@ const Posts = ({ feedType, username, userId }) => {
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || "Something went wrong");
-        console.log("posts", data);
+        // console.log("posts", data);
 
         return data;
       } catch (error) {
