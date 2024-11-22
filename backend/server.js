@@ -35,10 +35,13 @@ app.use("/api/notifications", notificationRoutes);
 const environment = process.env.NODE_ENV?.trim(); // Remove any trailing or leading spaces
 
 if (environment === "production") {
+  console.log("Production environment detected");
+
   // Serve static files
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
   // Catch-all route to serve index.html for SPA
   app.get("*", (req, res) => {
+    console.log(`Serving index.html for route: ${req.originalUrl}`);
     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
   });
 }

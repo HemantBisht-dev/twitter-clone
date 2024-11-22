@@ -24,7 +24,6 @@ const NotificationPage = () => {
         });
         if (!res.ok) throw new Error(data.error || "Something went wrong");
         const data = await res.json();
-        console.log(data);
         return data;
       } catch (error) {
         throw new Error(error);
@@ -40,7 +39,6 @@ const NotificationPage = () => {
         });
         if (!res.ok) throw new Error(data.error || "Something went wrong");
         const data = await res.json();
-        console.log(data);
         return data;
       } catch (error) {
         throw new Error(error);
@@ -53,11 +51,7 @@ const NotificationPage = () => {
     onError: (error) => {
       toast.error(error.message);
     },
-  });
-
-	console.log('notifications', notifications);
-  
-	
+  });	
 
   return (
     <>
