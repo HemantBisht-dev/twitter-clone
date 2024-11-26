@@ -33,6 +33,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 const environment = process.env.NODE_ENV?.trim(); // Remove any trailing or leading spaces
+console.log("Environment:", environment);
 
 if (environment === "production") {
   console.log("Production environment detected");
@@ -44,6 +45,8 @@ if (environment === "production") {
     console.log(`Serving index.html for route: ${req.originalUrl}`);
     res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
   });
+} else {
+  console.log("Not in production environment");
 }
 
 app.listen(PORT, () => {
